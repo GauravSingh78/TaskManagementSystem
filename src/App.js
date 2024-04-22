@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import WelcomePage from './components/WelcomePage';
+import Register from './components/Register';
+import Login from './components/Login';
+import HomePage from './components/HomePage';
+import AboutPage from './components/AboutPage';
+import Layout from './components/Layout';
+import Task from './components/Task';
+import TaskList from './components/TaskList';
 
-function App() {
+const App = () => {
+  const [username, setUsername] = useState('');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login setUsername={setUsername} />} />
+        <Route path="/home/*" element={<HomePage username={username} />} />
+        <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+        <Route path="/task" element={<Layout><Task /></Layout>} />
+        <Route path="/tasklist" element={<Layout><TaskList /></Layout>} />
+
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;

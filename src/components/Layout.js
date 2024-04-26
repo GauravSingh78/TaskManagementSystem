@@ -6,8 +6,7 @@ const Layout = ({ children }) => {
   const username = localStorage.getItem('username');
 
   const handleLogout = () => {
-    // Perform logout actions, such as clearing session/local storage
-    // Redirect to the welcome page
+    // Handle logout logic
     navigate('/');
   };
 
@@ -17,9 +16,9 @@ const Layout = ({ children }) => {
         <div className="container">
           {/* <span className="navbar-brand">{username && username.toUpperCase()}</span> */}
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
+            <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <Link to="/home" className="nav-link">{username && username.toUpperCase()}</Link>
+                <Link to="/home" className="nav-link" style={{ color: 'navy', fontWeight: 'bold' }}>{username && username.toUpperCase()}</Link>
               </li>
               <li className="nav-item">
                 <Link to="/about" className="nav-link">About</Link>
@@ -30,6 +29,8 @@ const Layout = ({ children }) => {
               <li className="nav-item">
                 <Link to="/tasklist" className="nav-link">Task-List</Link>
               </li>
+            </ul>
+            <ul className="navbar-nav mr-auto">
               <li className="nav-item">
                 <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
               </li>

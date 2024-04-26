@@ -33,10 +33,10 @@ const Register = () => {
   };
 
   return (
-    <div className="container">
-      <div className="card">
+    <div className="container d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+      <div className="card shadow p-3 mb-5 bg-white rounded" style={{ width: "400px" }}>
         <div className="card-body">
-          <h2>Register</h2>
+          <h2 className="card-title text-center mb-4">Register</h2>
           {error && <div className="alert alert-danger" role="alert">{error}</div>}
           <div className="mb-3">
             <input
@@ -65,8 +65,11 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary" onClick={handleRegister}>Register</button>
-          <p className="mt-3">Already have an account? <Link to="/login" style={{ color: '#007bff' }}>Login here</Link></p>
+          <div className="d-grid gap-2 mb-3">
+            <button className="btn btn-primary" onClick={handleRegister}>Register</button>
+          </div>
+          <p className="text-center mt-3">Already have an account? <Link to="/login" style={{ color: '#007bff' }}>Login here</Link></p>
+          <p className="text-center mt-3"> <Link to="/">Home</Link></p>
         </div>
       </div>
     </div>

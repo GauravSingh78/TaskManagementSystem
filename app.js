@@ -77,10 +77,14 @@ app.get('/tasks/:username', async (req, res) => {
         }
 
         // Fetch tasks from the tasks table for the given username
-        const result = await pool.query('SELECT usertask FROM tasks WHERE username = $1', [username]);
+        const result = await pool.query('SELECT id,usertask FROM tasks WHERE username = $1', [username]);
         const tasks = result.rows.map(row => row.usertask);
+        const taskid = result.rows.map(row => row.id);
+        
+        console.log("Tasks "+tasks)
+        console.log("TasksId "+taskid)
 
-        res.status(200).json({ tasks });
+        res.status(200).json({ tasks,taskid });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -89,19 +93,56 @@ app.get('/tasks/:username', async (req, res) => {
 
 
 // Update task
-app.put('/tasks/:username/:index', async (req, res) => {
+app.put("/update-task/:username/:taskId", async (req, res) => {
     try {
-        const { username, index } = req.params;
-        const { task } = req.body;
-        // Construct the SQL query dynamically with the username
-        const query = `UPDATE ${username} SET task = $1 WHERE id = $2 RETURNING *`;
-        const updatedTask = await pool.query(query, [task, index]);
-        res.status(200).json(updatedTask.rows[0]);
+      const { username, taskId } = req.params;
+      const { task } = req.body;
+  
+      // Update the task in the database
+      const result = await pool.query(
+        "UPDATE tasks SET usertask = $1 WHERE username = $2 AND id = $3",
+        [task, username, taskId]
+      );
+  
+      if (result.rowCount === 1) {
+        res.status(200).json({ message: "Task updated successfully" });
+      } else {
+        throw new Error("Failed to update task");
+      }
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ error: "Failed to update task" });
+    }
+  });
+  
+
+
+  
+
+
+// DELETE request to delete a task
+app.delete('/delete-task/:username/:taskId', async (req, res) => {
+    try {
+        const { username, taskId } = req.params;
+        console.log("username "+username +" TaskID "+ taskId)
+        // Check if the task exists
+        const taskExists = await pool.query('SELECT * FROM tasks WHERE id = $1 AND username = $2', [taskId, username]);
+        
+        if (taskExists.rows.length === 0) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Delete the task
+        await pool.query('DELETE FROM tasks WHERE id = $1 AND username = $2', [taskId, username]);
+
+        res.status(200).json({ message: 'Task deleted successfully' });
     } catch (error) {
-        console.error('Error updating task:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error deleting task:', error);
+        res.status(500).json({ error: 'Failed to delete task' });
     }
 });
+
+
 
 
 
@@ -128,30 +169,6 @@ app.get('/tasks/:username/:index', async (req, res) => {
 
 
 // Delete task
-app.delete('/tasks/:username/:index', async (req, res) => {
-    try {
-        const { username, index } = req.params;
-        
-        // Fetch the taskId associated with the task
-        const taskQuery = `SELECT id FROM ${username} OFFSET ${index} LIMIT 1`;
-        const taskResult = await pool.query(taskQuery);
-
-        if (taskResult.rows.length === 0) {
-            throw new Error('Task not found');
-        }
-
-        const taskId = taskResult.rows[0].id;
-
-        // Delete the task using the fetched taskId
-        const deleteQuery = `DELETE FROM ${username} WHERE id = $1`;
-        const deleteResult = await pool.query(deleteQuery, [taskId]);
-
-        res.status(200).json({ message: 'Task deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting task:', error);
-        res.status(500).json({ error: 'Error deleting task' });
-    }
-});
 
 
 

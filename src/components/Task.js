@@ -21,6 +21,7 @@ const Task = () => {
       }
       
       setTask('');
+      alert("Task added successfully...")
     } catch (error) {
       console.error(error.message);
     }

@@ -20,14 +20,15 @@ const Layout = ({ children }) => {
               <li className="nav-item">
                 <Link to="/home" className="nav-link" style={{ color: 'navy', fontWeight: 'bold' }}>{username && username.toUpperCase()}</Link>
               </li>
-              <li className="nav-item">
-                <Link to="/about" className="nav-link">About</Link>
-              </li>
+              
               <li className="nav-item">
                 <Link to="/task" className="nav-link">Task</Link>
               </li>
               <li className="nav-item">
                 <Link to="/tasklist" className="nav-link">Task-List</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/about" className="nav-link">About</Link>
               </li>
             </ul>
             <ul className="navbar-nav mr-auto">

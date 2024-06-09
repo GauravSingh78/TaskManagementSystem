@@ -77,14 +77,16 @@ app.get('/tasks/:username', async (req, res) => {
         }
 
         // Fetch tasks from the tasks table for the given username
-        const result = await pool.query('SELECT id,usertask FROM tasks WHERE username = $1', [username]);
+        const result = await pool.query('SELECT id,usertask,done FROM tasks WHERE username = $1', [username]);
         const tasks = result.rows.map(row => row.usertask);
         const taskid = result.rows.map(row => row.id);
-        
+        const doneTask = result.rows.map(row => row.done);
         console.log("Tasks "+tasks)
         console.log("TasksId "+taskid)
+        console.log("Done Task "+doneTask)
 
-        res.status(200).json({ tasks,taskid });
+
+        res.status(200).json({ tasks, taskid, doneTask });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -100,7 +102,7 @@ app.put("/update-task/:username/:taskId", async (req, res) => {
   
       // Update the task in the database
       const result = await pool.query(
-        "UPDATE tasks SET usertask = $1 WHERE username = $2 AND id = $3",
+        "UPDATE tasks SET usertask = $1,done = FALSE WHERE username = $2 AND id = $3",
         [task, username, taskId]
       );
   
@@ -115,8 +117,22 @@ app.put("/update-task/:username/:taskId", async (req, res) => {
     }
   });
   
+// task is done
 
-
+  app.put('/done-task/:username/:taskId', async (req, res) => {
+    try {
+      const { username, taskId } = req.params;
+  
+      // Update the task's done status in the database
+      await pool.query('UPDATE tasks SET done = TRUE WHERE username = $1 AND id = $2', [username, taskId]);
+  
+      res.status(200).json({ message: 'Task marked as done successfully' });
+    } catch (error) {
+      console.error('Error marking task as done:', error);
+      res.status(500).json({ error: 'Failed to mark task as done' });
+    }
+  });
+  
   
 
 
